@@ -2,7 +2,7 @@
 title: "TreeWrap Protocol"
 category: info
 
-docname: draft-kkohbrok-ietf-treewrap-protocol-latest
+docname: draft-kohbrok-ietf-treewrap-protocol-latest
 submissiontype: IETF  # also: "independent", "editorial", "IAB", or "IRTF"
 number:
 date:
