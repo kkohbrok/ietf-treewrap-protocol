@@ -8,19 +8,19 @@ number:
 date:
 consensus: true
 v: 3
-area: AREA
-workgroup: WG Working Group
+area: ""
+workgroup: "IETF"
 keyword:
  - encryption
  - forward secrecy
  - post-compromise security
 venue:
-  group: WG
-  type: Working Group
-  mail: WG@example.com
-  arch: https://example.com/WG
-  github: kkohbrok/ietf-treewrap-protocol
-  latest: https://example.com/LATEST
+  group: "IETF"
+  type: "Internet Engineering Task Force"
+  mail: ""
+  arch: ""
+  github: "kkohbrok/ietf-treewrap-protocol"
+  latest: "https://kkohbrok.github.io/ietf-treewrap-protocol/draft-kohbrok-ietf-treewrap-protocol.html"
 
 author:
  -
