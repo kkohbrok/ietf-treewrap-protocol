@@ -14,6 +14,13 @@ keyword:
  - encryption
  - forward secrecy
  - post-compromise security
+venue:
+  group: WG
+  type: Working Group
+  mail: WG@example.com
+  arch: https://example.com/WG
+  github: kkohbrok/ietf-treewrap-protocol
+  latest: https://example.com/LATEST
 
 author:
  -
