@@ -27,14 +27,14 @@ author:
     fullname: Raphael Robert
     organization: Phoenix R&D
     email: ietf@raphaelrobert.com
- - 
+ -
     fullname: Konrad Kohbrok
     organization: Phoenix R&D
     email: konrad.kohbrok@datashrine.de
- - 
+ -
     fullname: Joël Alwen
     email: alwenjo@amazon.com
- - 
+ -
     fullname: Marta Mularczyk
     email: mulmarta@amazon.com
 
