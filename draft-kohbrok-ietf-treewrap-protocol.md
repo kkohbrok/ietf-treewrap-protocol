@@ -61,14 +61,41 @@ stored on untrusted infrastructure as a binary tree called the _key tree_.
 The key that allows the recovery of the set of keys from a key tree is called the
 tree's `main_key`.
 
-The nodes of the tree are either encrypted keys, references to (encrypted) keys
-or references to the `main_key`.
+The nodes of the tree are either references the parent key or encrypted keys.
 
-Each leaf of the tree is either an encrypted key in the key set or a reference
-to a key in the key set. The width of the tree is thus the size of the key set.
+~~~ tls
+enum {
+  reserved(0),
+  parent_key_ref(1),
+  encrypted_key(2),
+} NodeType
 
-If a node is a ciphertext, it is encrypted either by the key encrypted in the
-node's parent node, or the key referenced by the parent node.
+struct {
+  NodeType type;
+  select (Node.type) {
+    case parent_key_ref:
+      struct{};
+    case encrypted_key:
+      opaque ciphertext<V>;
+  }
+} Node
+
+struct {
+  Node content;
+  bool blank;
+} LeafNode
+~~~
+
+Each leaf of the tree is either blank (if `blank = true`), an encrypted key in
+the key set or a reference to a key in the key set. The width of the tree minus
+the number of blanks is thus the size of the key set.
+
+If a node is an encrypted key, it was encrypted either under the key encrypted
+in the node's parent node, the key referenced by the parent node, or the root
+node (if the node in question is the root node).
+
+If the root node is of type `parent_key_ref`, it's a reference to the key tree's
+`main_key`.
 
 ## Initializing a key tree
 
@@ -113,48 +140,143 @@ algorithm.
   child of the new parent node is the new leaf node.
 
 In both cases, both the new parent and the new leaf node are references to the
-new `main_key`.
+new `main_key`. Leaf nodes added in this way have `blank` set to `false`.
 
-If there is a blank leaf, the direct path is set as described in
+If there is a blank leaf in the tree, the direct path is set as described in
 {{setting-a-direct-path}} with the new key as the new `main_key` and the index
 of the blank leaf as the affected index.
 
+{{add-operation}} depicts the key tree through two add operations. `{k0}_k1`
+denotes the key `k0` encrypted under `k1`.
+
 ~~~ ascii-art
-                                                      k2_ref                                    k3_ref                     
-                                           _____________|                            _____________|_____________           
-                                          /              \                          /                           \          
-         k1_ref                       {k1}_k2             \                     {k1}_k3                       k3_ref       
-     ______|______                 ______|______           \                 ______|______                ______|______    
-    /             \               /             \           \               /             \              /             \   
-{k0}_k1         k1_ref        {k0}_k1         k1_ref      k2_ref        {k0}_k1         k1_ref       {k2}_k3         k3_ref
+         k1_ref
+     ______|______
+    /             \
+{k0}_k1         k1_ref
+
+
+
+                        k2_ref
+             _____________|
+            /              \
+        {k1}_k2             \
+     ______|______           \
+    /             \           \
+{k0}_k1         k1_ref      k2_ref
+
+
+
+                        k3_ref
+             _____________|_____________
+            /                           \
+        {k1}_k3                       k3_ref
+     ______|______                ______|______
+    /             \              /             \
+{k0}_k1         k1_ref       {k2}_k3         k3_ref
 ~~~
-
-
-
-## Removing keys
-
-When removing a key in a specific index, the new `main_key` is freshly sampled
-and the direct path of the index is set as described in
-{{setting-a-direct-path}}.
+{: #add-operation title="A sequence of two add operations" }
 
 ## Updating keys
 
 When updating a key in a specific index, the new key is set to be the new
-`main_key` and the direct path of the index is set as described in
+`main_key` and the direct path of the target key is set as described in
 {{setting-a-direct-path}}.
+
+~~~ ascii-art
+                        k3_ref
+             _____________|_____________
+            /                           \
+        {k1}_k3                       k3_ref
+     ______|______                ______|______
+    /             \              /             \
+{k0}_k1         k1_ref       {k2}_k3         k3_ref
+
+                        k4_ref
+             _____________|_____________
+            /                           \
+         k4_ref                      {k3}_k4
+     ______|______                ______|______
+    /             \              /             \
+{k0}_k4         k4_ref       {k2}_k3         k3_ref
+~~~
+{: #update-operation title="Updating k1 to k4" }
+
+## Removing keys
+
+A leaf that is targeted for removal and that are not the right-most leaf of the
+tree is not so much removed as overwritten by a new leaf marked as blank.
+
+When removing a key, a fresh `main_key` is stampled and the target leaf and the
+direct path of the target leaf's index is set as described in
+{{setting-a-direct-path}}. The target leaf is additionally marked as blank by
+setting `blank = true`.
+
+If the target leaf is the right-most leaf of the tree, that node, as well as its
+parent node are removed from the tree. If the removed parent node was not the
+root node, its other child becomes the right child of the removed parent's
+parent node.
+
+~~~ ascii-art
+                        k3_ref
+             _____________|_____________
+            /                           \
+        {k1}_k3                       k3_ref
+     ______|______                ______|______
+    /             \              /             \
+{k0}_k1         k1_ref       {k2}_k3         k3_ref
+
+                        k5_ref
+             _____________|_
+            /               \
+        {k4}_k5              \
+     ______|______            \
+    /             \            \
+{k0}_k4         k4_ref       {k2}_k5
+
+        {k4}_k6
+     ______|______
+    /             \
+{k0}_k4         k4_ref
+~~~
+{: #remove-operations title="Removing first k3 and then k2." }
+
+Note that in the sequence of operations shown in {{remove-operations}}, neither
+k5 nor k6 are part of the key set. Both are generated as part of a remove
+operation as a nessecity to purge the target keys from the tree. As a
+consequence, they will not be in the key set that results from decrypting the
+key tree as described in {{decryption}}.
 
 ## Decryption
 
 Any party in possession of the current `main_key` can decrypt a copy of the key
-tree using the following algorithm starting at the root.
+tree using the following algorithm starting at the root. Decryption will yield a
+vector of keys.
 
 - If the node is an encrypted key, decrypt it using the key in the parent node
-  (or the `main_key` if the node is the root) and add it to the output set.
-- If the node is a reference do nothing.
-- If the node is a parent node, execute the algorithm for both children of the
-  node.
+  (or the `main_key` if the node is the root).
+  - If the node is a non-blank leaf node, add the key to the output set at the
+    index of the leaf, otherwise store the key and continue.
+  - If the node is a blank leaf node, terminate this execution of the algorithm.
+  - If the node is a parent node, store the key and execute this algorithm with
+    both of the node's children.
+- If the node is a reference proceed as follows:
+  - If the node is a leaf node, follow the references until a node
+    with a key is reached.
+    - If the root is reached without finding a key, add the `main_key` to the
+      output set at the index of the leaf node.
+    - If a parent node with a key is reached, add that key to the output set at
+      the index of the leaf node.
+  - If the node is a parent node execute the algorithm for both children of the
+    node.
 
 After executing the algorithm, the output set contains all keys in the key set.
+
+A party that is already in possession of the key set and the `main_key` of a key
+tree can perform any operation on the key tree from just the new direct path and
+copath nodes.
+
+TODO: Write up an algorithm to do this.
 
 ## Security properties
 
