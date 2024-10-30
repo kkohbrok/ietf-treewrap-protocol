@@ -119,6 +119,18 @@ If there is a blank leaf, the direct path is set as described in
 {{setting-a-direct-path}} with the new key as the new `main_key` and the index
 of the blank leaf as the affected index.
 
+~~~ ascii-art
+                                                      k2_ref                                    k3_ref                     
+                                           _____________|                            _____________|_____________           
+                                          /              \                          /                           \          
+         k1_ref                       {k1}_k2             \                     {k1}_k3                       k3_ref       
+     ______|______                 ______|______           \                 ______|______                ______|______    
+    /             \               /             \           \               /             \              /             \   
+{k0}_k1         k1_ref        {k0}_k1         k1_ref      k2_ref        {k0}_k1         k1_ref       {k2}_k3         k3_ref
+~~~
+
+
+
 ## Removing keys
 
 When removing a key in a specific index, the new `main_key` is freshly sampled
