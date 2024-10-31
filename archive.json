@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2024-10-29T00:07:55.926125+00:00",
+  "timestamp": "2024-10-31T00:07:49.541296+00:00",
   "repo": "kkohbrok/ietf-treewrap-protocol",
   "labels": [
     {
@@ -50,5 +50,32 @@
     }
   ],
   "issues": [],
-  "pulls": []
+  "pulls": [
+    {
+      "number": 1,
+      "id": "PR_kwDOLuVRs86AXgPN",
+      "title": "Initial spec",
+      "url": "https://github.com/kkohbrok/ietf-treewrap-protocol/pull/1",
+      "state": "OPEN",
+      "author": "kkohbrok",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2024-10-30T11:13:39Z",
+      "updatedAt": "2024-10-30T14:21:40Z",
+      "baseRepository": "kkohbrok/ietf-treewrap-protocol",
+      "baseRefName": "main",
+      "baseRefOid": "8a35e27acea9adb27bbc4e53c06e5de770663920",
+      "headRepository": "kkohbrok/ietf-treewrap-protocol",
+      "headRefName": "konrad/initial_spec",
+      "headRefOid": "06e7040b60131d2eaff24c89539bb02d70e27168",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": []
+    }
+  ]
 }
