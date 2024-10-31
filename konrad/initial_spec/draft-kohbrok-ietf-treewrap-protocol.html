@@ -10,10 +10,11 @@
 <meta content="Joël Alwen" name="author">
 <meta content="Marta Mularczyk" name="author">
 <meta content="
-       TreeWrap is a protocol to distribute and manage a set of keys. Keys can be
-added, removed (to provide forward secrecy) and updated (to provide
-post-compromise security). TreeWrap key material can be stored and distributed
-efficiently through untrusted infrastructure. 
+       TreeWrap is a protocol to encrypt a vector of records that allows individual
+records be added, updated and removed. The key material used for encryption is
+managed to provide forward-secrecy and post-compromise security. Operations on
+the vector of records are efficient both in terms of computational effort, as
+well as size of the resulting update to the encrypted records. 
     " name="description">
 <meta content="xml2rfc 3.23.2" name="generator">
 <meta content="encryption" name="keyword">
@@ -1089,7 +1090,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
 </tr></thead>
 <tfoot><tr>
 <td class="left">Robert, et al.</td>
-<td class="center">Expires 3 May 2025</td>
+<td class="center">Expires 4 May 2025</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1102,12 +1103,12 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <dd class="internet-draft">draft-kohbrok-ietf-treewrap-protocol-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2024-10-30" class="published">30 October 2024</time>
+<time datetime="2024-10-31" class="published">31 October 2024</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Informational</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2025-05-03">3 May 2025</time></dd>
+<dd class="expires"><time datetime="2025-05-04">4 May 2025</time></dd>
 <dt class="label-authors">Authors:</dt>
 <dd class="authors">
 <div class="author">
@@ -1130,10 +1131,11 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <h1 id="title">TreeWrap Protocol</h1>
 <section id="section-abstract">
       <h2 id="abstract"><a href="#abstract" class="selfRef">Abstract</a></h2>
-<p id="section-abstract-1">TreeWrap is a protocol to distribute and manage a set of keys. Keys can be
-added, removed (to provide forward secrecy) and updated (to provide
-post-compromise security). TreeWrap key material can be stored and distributed
-efficiently through untrusted infrastructure.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
+<p id="section-abstract-1">TreeWrap is a protocol to encrypt a vector of records that allows individual
+records be added, updated and removed. The key material used for encryption is
+managed to provide forward-secrecy and post-compromise security. Operations on
+the vector of records are efficient both in terms of computational effort, as
+well as size of the resulting update to the encrypted records.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
 </section>
 <section class="note rfcEditorRemove" id="section-note.1">
       <h2 id="name-about-this-document">
@@ -1166,7 +1168,7 @@ efficiently through untrusted infrastructure.<a href="#section-abstract-1" class
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 3 May 2025.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 4 May 2025.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1202,30 +1204,44 @@ efficiently through untrusted infrastructure.<a href="#section-abstract-1" class
             <p id="section-toc.1-1.2.1"><a href="#section-2" class="auto internal xref">2</a>.  <a href="#name-protocol-overview" class="internal xref">Protocol overview</a></p>
 <ul class="compact toc ulBare ulEmpty">
 <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.2.2.1">
-                <p id="section-toc.1-1.2.2.1.1" class="keepWithNext"><a href="#section-2.1" class="auto internal xref">2.1</a>.  <a href="#name-initializing-a-key-tree" class="internal xref">Initializing a key tree</a></p>
+                <p id="section-toc.1-1.2.2.1.1" class="keepWithNext"><a href="#section-2.1" class="auto internal xref">2.1</a>.  <a href="#name-initialization" class="internal xref">Initialization</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.2.2.2">
                 <p id="section-toc.1-1.2.2.2.1" class="keepWithNext"><a href="#section-2.2" class="auto internal xref">2.2</a>.  <a href="#name-setting-a-direct-path" class="internal xref">Setting a direct path</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.2.2.3">
-                <p id="section-toc.1-1.2.2.3.1"><a href="#section-2.3" class="auto internal xref">2.3</a>.  <a href="#name-adding-keys" class="internal xref">Adding keys</a></p>
+                <p id="section-toc.1-1.2.2.3.1"><a href="#section-2.3" class="auto internal xref">2.3</a>.  <a href="#name-adding-records" class="internal xref">Adding records</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.2.2.4">
-                <p id="section-toc.1-1.2.2.4.1"><a href="#section-2.4" class="auto internal xref">2.4</a>.  <a href="#name-updating-keys" class="internal xref">Updating keys</a></p>
+                <p id="section-toc.1-1.2.2.4.1"><a href="#section-2.4" class="auto internal xref">2.4</a>.  <a href="#name-updating-records" class="internal xref">Updating records</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.2.2.5">
-                <p id="section-toc.1-1.2.2.5.1"><a href="#section-2.5" class="auto internal xref">2.5</a>.  <a href="#name-removing-keys" class="internal xref">Removing keys</a></p>
+                <p id="section-toc.1-1.2.2.5.1"><a href="#section-2.5" class="auto internal xref">2.5</a>.  <a href="#name-removing-records" class="internal xref">Removing records</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.2.2.6">
-                <p id="section-toc.1-1.2.2.6.1"><a href="#section-2.6" class="auto internal xref">2.6</a>.  <a href="#name-decryption" class="internal xref">Decryption</a></p>
+                <p id="section-toc.1-1.2.2.6.1"><a href="#section-2.6" class="auto internal xref">2.6</a>.  <a href="#name-processing-operation-result" class="internal xref">Processing operation results</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.2.2.6.2.1">
+                    <p id="section-toc.1-1.2.2.6.2.1.1"><a href="#section-2.6.1" class="auto internal xref">2.6.1</a>.  <a href="#name-updating-a-vector-of-record" class="internal xref">Updating a vector of records</a></p>
+</li>
+                  <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.2.2.6.2.2">
+                    <p id="section-toc.1-1.2.2.6.2.2.1"><a href="#section-2.6.2" class="auto internal xref">2.6.2</a>.  <a href="#name-updating-a-public-protocol-" class="internal xref">Updating a public protocol state</a></p>
+</li>
+                </ul>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.2.2.7">
-                <p id="section-toc.1-1.2.2.7.1"><a href="#section-2.7" class="auto internal xref">2.7</a>.  <a href="#name-security-properties" class="internal xref">Security properties</a></p>
+                <p id="section-toc.1-1.2.2.7.1"><a href="#section-2.7" class="auto internal xref">2.7</a>.  <a href="#name-decryption" class="internal xref">Decryption</a></p>
 </li>
             </ul>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3">
-            <p id="section-toc.1-1.3.1"><a href="#appendix-A" class="auto internal xref"></a><a href="#name-authors-addresses" class="internal xref">Authors' Addresses</a></p>
+            <p id="section-toc.1-1.3.1"><a href="#section-3" class="auto internal xref">3</a>.  <a href="#name-key-generation-and-distribu" class="internal xref">Key generation and distribution</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4">
+            <p id="section-toc.1-1.4.1"><a href="#section-4" class="auto internal xref">4</a>.  <a href="#name-security-properties" class="internal xref">Security properties</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5">
+            <p id="section-toc.1-1.5.1"><a href="#appendix-A" class="auto internal xref"></a><a href="#name-authors-addresses" class="internal xref">Authors' Addresses</a></p>
 </li>
         </ul>
 </nav>
@@ -1243,12 +1259,31 @@ efficiently through untrusted infrastructure.<a href="#section-abstract-1" class
       <h2 id="name-protocol-overview">
 <a href="#section-2" class="section-number selfRef">2. </a><a href="#name-protocol-overview" class="section-name selfRef">Protocol overview</a>
       </h2>
-<p id="section-2-1">A set of keys managed through the TreeWrap protocol can be distributed and
-stored on untrusted infrastructure as a binary tree called the <em>key tree</em>.<a href="#section-2-1" class="pilcrow">¶</a></p>
-<p id="section-2-2">The key that allows the recovery of the set of keys from a key tree is called the
-tree's <code>main_key</code>.<a href="#section-2-2" class="pilcrow">¶</a></p>
-<p id="section-2-3">The nodes of the tree are either references the parent key or encrypted keys.<a href="#section-2-3" class="pilcrow">¶</a></p>
-<div class="lang-tls sourcecode" id="section-2-4">
+<p id="section-2-1">The protocol state consists of four elements:<a href="#section-2-1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-2-2.1">
+          <p id="section-2-2.1.1">Vector of records: The vector of records to be encrypted<a href="#section-2-2.1.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="section-2-2.2">
+          <p id="section-2-2.2.1">AEAD Scheme: The AEAD scheme to encrypt the records and key material<a href="#section-2-2.2.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="section-2-2.3">
+          <p id="section-2-2.3.1"><code>main_key</code>: A key that allows the holder to decrypt the remaining state<a href="#section-2-2.3.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="section-2-2.4">
+          <p id="section-2-2.4.1"><em>Encrypted records</em>: A vector where each element is either <em>blank</em> (i.e.
+empty) or an encrypted record<a href="#section-2-2.4.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="section-2-2.5">
+          <p id="section-2-2.5.1"><em>Key tree</em>: A binary tree as wide as the size of the ciphertext vector where
+nodes are either encrypted keys or references to (encrypted) keys<a href="#section-2-2.5.1" class="pilcrow">¶</a></p>
+</li>
+      </ul>
+<p id="section-2-3">The AEAD scheme, the encrypted records and the key tree represent the public
+state of the protocol. All three can be stored by untrusted parties.<a href="#section-2-3" class="pilcrow">¶</a></p>
+<p id="section-2-4">Holders of the <code>main_key</code> can use it along with the public state of the protocol
+to obtain the vector of records.<a href="#section-2-4" class="pilcrow">¶</a></p>
+<div class="lang-tls sourcecode" id="section-2-5">
 <pre>
 enum {
   reserved(0),
@@ -1267,26 +1302,32 @@ struct {
 } Node
 
 struct {
-  Node content;
-  bool blank;
-} LeafNode
-</pre><a href="#section-2-4" class="pilcrow">¶</a>
+  opaque encrypted_record&lt;V&gt;;
+} EncryptedRecord
+
+struct {
+  AEADScheme aead_scheme;
+  Node key_tree&lt;V&gt;;
+  Option&lt;EncryptedRecord&gt; encrypted_records&lt;V&gt;;
+} TreeWrapPublicState
+</pre><a href="#section-2-5" class="pilcrow">¶</a>
 </div>
-<p id="section-2-5">Each leaf of the tree is either blank (if <code>blank = true</code>), an encrypted key in
-the key set or a reference to a key in the key set. The width of the tree minus
-the number of blanks is thus the size of the key set.<a href="#section-2-5" class="pilcrow">¶</a></p>
 <p id="section-2-6">If a node is an encrypted key, it was encrypted either under the key encrypted
-in the node's parent node, the key referenced by the parent node, or the root
-node (if the node in question is the root node).<a href="#section-2-6" class="pilcrow">¶</a></p>
+in the node's parent node, the key referenced by the parent node, or the
+<code>main_key</code> (if the node in question is the root node).<a href="#section-2-6" class="pilcrow">¶</a></p>
 <p id="section-2-7">If the root node is of type <code>parent_key_ref</code>, it's a reference to the key tree's
 <code>main_key</code>.<a href="#section-2-7" class="pilcrow">¶</a></p>
-<div id="initializing-a-key-tree">
+<p id="section-2-8">The key in each individual leaf of the key tree (either encrypted or referenced)
+is used to encrypt a record in the vector of records. Key and record are paired
+according to their leaf index and vector index respectively.<a href="#section-2-8" class="pilcrow">¶</a></p>
+<div id="initialization">
 <section id="section-2.1">
-        <h3 id="name-initializing-a-key-tree">
-<a href="#section-2.1" class="section-number selfRef">2.1. </a><a href="#name-initializing-a-key-tree" class="section-name selfRef">Initializing a key tree</a>
+        <h3 id="name-initialization">
+<a href="#section-2.1" class="section-number selfRef">2.1. </a><a href="#name-initialization" class="section-name selfRef">Initialization</a>
         </h3>
-<p id="section-2.1-1">A key tree is initialized by setting the root (and only node) of the tree to be
-a reference to the <code>main_key</code>.<a href="#section-2.1-1" class="pilcrow">¶</a></p>
+<p id="section-2.1-1">The initial <code>main_key</code> is taken as input, but MUST be of the appropriate length
+for use with the AEAD scheme. The key tree is initialized by setting the root
+(and only node) of the tree to be of type <code>parent_key_ref</code>.<a href="#section-2.1-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="setting-a-direct-path">
@@ -1294,10 +1335,10 @@ a reference to the <code>main_key</code>.<a href="#section-2.1-1" class="pilcrow
         <h3 id="name-setting-a-direct-path">
 <a href="#section-2.2" class="section-number selfRef">2.2. </a><a href="#name-setting-a-direct-path" class="section-name selfRef">Setting a direct path</a>
         </h3>
-<p id="section-2.2-1">All operations (add, remove and update) use the following basic algorithm that
-take as input a the current <code>main_key</code>, the new <code>main_key</code>, as well as the
-direct path (including the leaf) and the copath of the leaf index that is the
-target of the operation.<a href="#section-2.2-1" class="pilcrow">¶</a></p>
+<p id="section-2.2-1">All key tree operations (add, remove and update) use the following basic
+algorithm that takes as input a new <code>main_key</code>, the current <code>main_key</code>, as well
+as the direct path (including the leaf) and the copath of the target key tree
+leaf.<a href="#section-2.2-1" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-2.2-2.1">
             <p id="section-2.2-2.1.1">Recover the keys in the direct path starting with the root node (which is
@@ -1323,43 +1364,61 @@ in their respective parent nodes<a href="#section-2.2-2.2.1" class="pilcrow">¶<
             <p id="section-2.2-2.4.1">Encrypt the keys in the copath with the new <code>main_key</code><a href="#section-2.2-2.4.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
-<p id="section-2.2-3">The outputs of the operation are the new nodes in the direct path and copath of
-the affected index. The outputs consist only of key references and ciphertexts
-and can be sent to untrusted parties to update copies of the key tree.<a href="#section-2.2-3" class="pilcrow">¶</a></p>
+<p id="section-2.2-3">The outputs of the operation are the affected index and the new nodes in its
+copath. The outputs are all public and can be used to update a key tree.<a href="#section-2.2-3" class="pilcrow">¶</a></p>
+<div class="lang-tls sourcecode" id="section-2.2-4">
+<pre>
+struct {
+  uint32 leaf_index;
+  Node copath&lt;V&gt;;
+} KeyTreeUpdate
+</pre><a href="#section-2.2-4" class="pilcrow">¶</a>
+</div>
 </section>
 </div>
-<div id="adding-keys">
+<div id="adding-records">
 <section id="section-2.3">
-        <h3 id="name-adding-keys">
-<a href="#section-2.3" class="section-number selfRef">2.3. </a><a href="#name-adding-keys" class="section-name selfRef">Adding keys</a>
+        <h3 id="name-adding-records">
+<a href="#section-2.3" class="section-number selfRef">2.3. </a><a href="#name-adding-records" class="section-name selfRef">Adding records</a>
         </h3>
-<p id="section-2.3-1">When a key is added to the tree, the new key either fills a blank leaf (see
-<a href="#removing-keys" class="auto internal xref">Section 2.5</a>) or, if there are no blank leaves, the tree is extended.<a href="#section-2.3-1" class="pilcrow">¶</a></p>
-<p id="section-2.3-2">If there are no blank leaves, the tree is extended using the following
-algorithm.<a href="#section-2.3-2" class="pilcrow">¶</a></p>
+<p id="section-2.3-1">The input to the to an add operation is the new record, as well as a new
+<code>main_key</code>.<a href="#section-2.3-1" class="pilcrow">¶</a></p>
+<p id="section-2.3-2">When a record is added to the vector of records, the new record either fills the
+blank with the lowest index (see <a href="#removing-records" class="auto internal xref">Section 2.5</a>) or, if there are no
+blanks, the vector, as well as the key tree are extended.<a href="#section-2.3-2" class="pilcrow">¶</a></p>
+<p id="section-2.3-3">If there are no blanks in the vector of records, the vector is expanded by one
+and the key tree is extended using the following algorithm.<a href="#section-2.3-3" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-2.3-3.1">
-            <p id="section-2.3-3.1.1">If the tree is full, two new nodes are added: A new root and a new leaf, where
-the previous root and the new leaf are the children of the new root.<a href="#section-2.3-3.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="section-2.3-4.1">
+            <p id="section-2.3-4.1.1">If the tree is full, two new nodes are added: A new root and a new leaf, where
+the previous root and the new leaf are the children of the new root.<a href="#section-2.3-4.1.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="section-2.3-3.2">
-            <p id="section-2.3-3.2.1">If the tree is not full, two new nodes are added: A new parent node and a new
+          <li class="normal" id="section-2.3-4.2">
+            <p id="section-2.3-4.2.1">If the tree is not full, two new nodes are added: A new parent node and a new
 leaf. The new parent node is added as the leaf of the right-most parent node,
 where the children are roots of sub-trees of different debth. The left child
 of the new parent node is the former right child of its parent node. The right
-child of the new parent node is the new leaf node.<a href="#section-2.3-3.2.1" class="pilcrow">¶</a></p>
+child of the new parent node is the new leaf node.<a href="#section-2.3-4.2.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
-<p id="section-2.3-4">In both cases, both the new parent and the new leaf node are references to the
-new <code>main_key</code>. Leaf nodes added in this way have <code>blank</code> set to <code>false</code>.<a href="#section-2.3-4" class="pilcrow">¶</a></p>
-<p id="section-2.3-5">If there is a blank leaf in the tree, the direct path is set as described in
-<a href="#setting-a-direct-path" class="auto internal xref">Section 2.2</a> with the new key as the new <code>main_key</code> and the index
-of the blank leaf as the affected index.<a href="#section-2.3-5" class="pilcrow">¶</a></p>
-<p id="section-2.3-6"><a href="#add-operation" class="auto internal xref">Figure 1</a> depicts the key tree through two add operations. <code>{k0}_k1</code>
-denotes the key <code>k0</code> encrypted under <code>k1</code>.<a href="#section-2.3-6" class="pilcrow">¶</a></p>
+<p id="section-2.3-5">In both cases both the new parent and the new leaf node are references to the
+new <code>main_key</code>.<a href="#section-2.3-5" class="pilcrow">¶</a></p>
+<p id="section-2.3-6">If there is a blank leaf in the vector of records, the direct path of the key
+tree leaf with the same index is set as described in <a href="#setting-a-direct-path" class="auto internal xref">Section 2.2</a>.<a href="#section-2.3-6" class="pilcrow">¶</a></p>
+<p id="section-2.3-7">Finally, the newly added record is encrypted under the new <code>main_key</code>.<a href="#section-2.3-7" class="pilcrow">¶</a></p>
+<div class="lang-tls sourcecode" id="section-2.3-8">
+<pre>
+struct {
+  KeyTreeUpdate key_tree_update;
+  EncryptedRecord added_record;
+} AddResult
+</pre><a href="#section-2.3-8" class="pilcrow">¶</a>
+</div>
+<p id="section-2.3-9"><a href="#add-operation" class="auto internal xref">Figure 1</a> depicts the key tree through two add operations. <code>{k0}_k1</code>
+denotes the key <code>k0</code> encrypted under <code>k1</code>.<a href="#section-2.3-9" class="pilcrow">¶</a></p>
 <span id="name-a-sequence-of-two-add-opera"></span><div id="add-operation">
 <figure id="figure-1">
-          <div class="alignLeft art-ascii-art art-text artwork" id="section-2.3-7.1">
+          <div class="alignLeft art-ascii-art art-text artwork" id="section-2.3-10.1">
 <pre>
          k1_ref
      ______|______
@@ -1393,17 +1452,28 @@ denotes the key <code>k0</code> encrypted under <code>k1</code>.<a href="#sectio
 </div>
 </section>
 </div>
-<div id="updating-keys">
+<div id="updating-records">
 <section id="section-2.4">
-        <h3 id="name-updating-keys">
-<a href="#section-2.4" class="section-number selfRef">2.4. </a><a href="#name-updating-keys" class="section-name selfRef">Updating keys</a>
+        <h3 id="name-updating-records">
+<a href="#section-2.4" class="section-number selfRef">2.4. </a><a href="#name-updating-records" class="section-name selfRef">Updating records</a>
         </h3>
-<p id="section-2.4-1">When updating a key in a specific index, the new key is set to be the new
-<code>main_key</code> and the direct path of the target key is set as described in
-<a href="#setting-a-direct-path" class="auto internal xref">Section 2.2</a>.<a href="#section-2.4-1" class="pilcrow">¶</a></p>
+<p id="section-2.4-1">The input to an update operation is the index of the record to be updated, the
+new record, as well as a new <code>main_key</code>.<a href="#section-2.4-1" class="pilcrow">¶</a></p>
+<p id="section-2.4-2">When updating a record in a specific index the direct path of the key tree is
+set as described in <a href="#setting-a-direct-path" class="auto internal xref">Section 2.2</a>. The updated record is then
+encrypted under the new <code>main_key</code> with the resulting encrypting record
+replacing the old encrypted record in the target index.<a href="#section-2.4-2" class="pilcrow">¶</a></p>
+<div class="lang-tls sourcecode" id="section-2.4-3">
+<pre>
+struct {
+  KeyTreeUpdate key_tree_update;
+  EncryptedRecord updated_record;
+} UpdateResult
+</pre><a href="#section-2.4-3" class="pilcrow">¶</a>
+</div>
 <span id="name-updating-k1-to-k4"></span><div id="update-operation">
 <figure id="figure-2">
-          <div class="alignLeft art-ascii-art art-text artwork" id="section-2.4-2.1">
+          <div class="alignLeft art-ascii-art art-text artwork" id="section-2.4-4.1">
 <pre>
                         k3_ref
              _____________|_____________
@@ -1428,24 +1498,31 @@ denotes the key <code>k0</code> encrypted under <code>k1</code>.<a href="#sectio
 </div>
 </section>
 </div>
-<div id="removing-keys">
+<div id="removing-records">
 <section id="section-2.5">
-        <h3 id="name-removing-keys">
-<a href="#section-2.5" class="section-number selfRef">2.5. </a><a href="#name-removing-keys" class="section-name selfRef">Removing keys</a>
+        <h3 id="name-removing-records">
+<a href="#section-2.5" class="section-number selfRef">2.5. </a><a href="#name-removing-records" class="section-name selfRef">Removing records</a>
         </h3>
-<p id="section-2.5-1">A leaf that is targeted for removal and that are not the right-most leaf of the
-tree is not so much removed as overwritten by a new leaf marked as blank.<a href="#section-2.5-1" class="pilcrow">¶</a></p>
-<p id="section-2.5-2">When removing a key, a fresh <code>main_key</code> is stampled and the target leaf and the
-direct path of the target leaf's index is set as described in
-<a href="#setting-a-direct-path" class="auto internal xref">Section 2.2</a>. The target leaf is additionally marked as blank by
-setting <code>blank = true</code>.<a href="#section-2.5-2" class="pilcrow">¶</a></p>
-<p id="section-2.5-3">If the target leaf is the right-most leaf of the tree, that node, as well as its
-parent node are removed from the tree. If the removed parent node was not the
-root node, its other child becomes the right child of the removed parent's
+<p id="section-2.5-1">A remove operation takes as input the index of the record to be removed, as well
+as a new <code>main_key</code>.<a href="#section-2.5-1" class="pilcrow">¶</a></p>
+<p id="section-2.5-2">A record that is targeted for removal is replaced with a blank before setting
+the direct path of the corresponding leaf node in the key tree as described in
+<a href="#setting-a-direct-path" class="auto internal xref">Section 2.2</a>.<a href="#section-2.5-2" class="pilcrow">¶</a></p>
+<p id="section-2.5-3">If the target record was the record at the end of the vector, the vector is
+shortened by one. Similarly, the record's corresponding leaf, as well as its
+parent node are removed from the key tree. If the removed parent node was not
+the root node, its other child becomes the right child of the removed parent's
 parent node.<a href="#section-2.5-3" class="pilcrow">¶</a></p>
+<div class="lang-tls sourcecode" id="section-2.5-4">
+<pre>
+struct {
+  KeyTreeUpdate key_tree_update;
+} RemoveResult
+</pre><a href="#section-2.5-4" class="pilcrow">¶</a>
+</div>
 <span id="name-removing-first-k3-and-then-"></span><div id="remove-operations">
 <figure id="figure-3">
-          <div class="alignLeft art-ascii-art art-text artwork" id="section-2.5-4.1">
+          <div class="alignLeft art-ascii-art art-text artwork" id="section-2.5-5.1">
 <pre>
                         k3_ref
              _____________|_____________
@@ -1473,91 +1550,137 @@ parent node.<a href="#section-2.5-3" class="pilcrow">¶</a></p>
 <a href="#name-removing-first-k3-and-then-" class="selfRef">Removing first k3 and then k2.</a>
           </figcaption></figure>
 </div>
-<p id="section-2.5-5">Note that in the sequence of operations shown in <a href="#remove-operations" class="auto internal xref">Figure 3</a>, neither
-k5 nor k6 are part of the key set. Both are generated as part of a remove
-operation as a nessecity to purge the target keys from the tree. As a
-consequence, they will not be in the key set that results from decrypting the
-key tree as described in <a href="#decryption" class="auto internal xref">Section 2.6</a>.<a href="#section-2.5-5" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="processing-operation-results">
+<section id="section-2.6">
+        <h3 id="name-processing-operation-result">
+<a href="#section-2.6" class="section-number selfRef">2.6. </a><a href="#name-processing-operation-result" class="section-name selfRef">Processing operation results</a>
+        </h3>
+<p id="section-2.6-1">The result of an operation can be processed by both parties holding only the
+public protocol state and by parties holding the vector of records.<a href="#section-2.6-1" class="pilcrow">¶</a></p>
+<div id="updating-a-vector-of-records">
+<section id="section-2.6.1">
+          <h4 id="name-updating-a-vector-of-record">
+<a href="#section-2.6.1" class="section-number selfRef">2.6.1. </a><a href="#name-updating-a-vector-of-record" class="section-name selfRef">Updating a vector of records</a>
+          </h4>
+<p id="section-2.6.1-1">For remove operations, a party that wants to update the vector of records needs
+only the affected index.<a href="#section-2.6.1-1" class="pilcrow">¶</a></p>
+<p id="section-2.6.1-2">For add and update operations, the party additionally needs the new <code>main_key</code>,
+as well as the (new) encrypted record. The party then decrypts the encrypted
+record using the new <code>main_key</code>. In case of an update the party replaces the
+record in the affected index with the result. In case of an add, the party uses
+the result to replace the blank with the lowest index or to extend the vector.<a href="#section-2.6.1-2" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="updating-a-public-protocol-state">
+<section id="section-2.6.2">
+          <h4 id="name-updating-a-public-protocol-">
+<a href="#section-2.6.2" class="section-number selfRef">2.6.2. </a><a href="#name-updating-a-public-protocol-" class="section-name selfRef">Updating a public protocol state</a>
+          </h4>
+<p id="section-2.6.2-1">A party that wants to update a public protocol state, needs the -Result struct
+of the respective operation. It can then use the KeyTreeUpdate to replace the
+copath nodes of the affected leaf and set the leaf's direct path to be
+<code>parent_node_ref</code>s (potentially extending the tree in case of adds).<a href="#section-2.6.2-1" class="pilcrow">¶</a></p>
+<p id="section-2.6.2-2">In case of updates, the encrypted record is replaced with the new one. In case
+of adds, the new record either replaces a blank or the vector is extended. In
+case of removes, the affected record is replaced with a blank and both key tree
+and vector are shortened if the new blank is at the end of the vector.<a href="#section-2.6.2-2" class="pilcrow">¶</a></p>
+</section>
+</div>
 </section>
 </div>
 <div id="decryption">
-<section id="section-2.6">
+<section id="section-2.7">
         <h3 id="name-decryption">
-<a href="#section-2.6" class="section-number selfRef">2.6. </a><a href="#name-decryption" class="section-name selfRef">Decryption</a>
+<a href="#section-2.7" class="section-number selfRef">2.7. </a><a href="#name-decryption" class="section-name selfRef">Decryption</a>
         </h3>
-<p id="section-2.6-1">Any party in possession of the current <code>main_key</code> can decrypt a copy of the key
-tree using the following algorithm starting at the root. Decryption will yield a
-vector of keys.<a href="#section-2.6-1" class="pilcrow">¶</a></p>
+<p id="section-2.7-1">Any party in possession of the current <code>main_key</code> and copy of the protocol
+public state can decrypt first the keys in the key tree and then the encrypted
+records to recover the vector of records.<a href="#section-2.7-1" class="pilcrow">¶</a></p>
+<p id="section-2.7-2">The key tree is decrypted using the following algorithm starting at the root.
+Decryption will yield a vector of keys where each key can be used to decrypt the
+record at the same index.<a href="#section-2.7-2" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-2.6-2.1">
-            <p id="section-2.6-2.1.1">If the node is an encrypted key, decrypt it using the key in the parent node
-(or the <code>main_key</code> if the node is the root).<a href="#section-2.6-2.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="section-2.7-3.1">
+            <p id="section-2.7-3.1.1">If the node is an encrypted key, decrypt it using the key in the parent node
+(or the <code>main_key</code> if the node is the root).<a href="#section-2.7-3.1.1" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-2.6-2.1.2.1">
-                <p id="section-2.6-2.1.2.1.1">If the node is a non-blank leaf node, add the key to the output set at the
-index of the leaf, otherwise store the key and continue.<a href="#section-2.6-2.1.2.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="section-2.7-3.1.2.1">
+                <p id="section-2.7-3.1.2.1.1">If the node is a non-blank leaf node, add the key to the output set at the
+index of the leaf, otherwise store the key and continue.<a href="#section-2.7-3.1.2.1.1" class="pilcrow">¶</a></p>
 </li>
-              <li class="normal" id="section-2.6-2.1.2.2">
-                <p id="section-2.6-2.1.2.2.1">If the node is a blank leaf node, terminate this execution of the algorithm.<a href="#section-2.6-2.1.2.2.1" class="pilcrow">¶</a></p>
+              <li class="normal" id="section-2.7-3.1.2.2">
+                <p id="section-2.7-3.1.2.2.1">If the node is a blank leaf node, terminate this execution of the algorithm.<a href="#section-2.7-3.1.2.2.1" class="pilcrow">¶</a></p>
 </li>
-              <li class="normal" id="section-2.6-2.1.2.3">
-                <p id="section-2.6-2.1.2.3.1">If the node is a parent node, store the key and execute this algorithm with
-both of the node's children.<a href="#section-2.6-2.1.2.3.1" class="pilcrow">¶</a></p>
+              <li class="normal" id="section-2.7-3.1.2.3">
+                <p id="section-2.7-3.1.2.3.1">If the node is a parent node, store the key and execute this algorithm with
+both of the node's children.<a href="#section-2.7-3.1.2.3.1" class="pilcrow">¶</a></p>
 </li>
             </ul>
 </li>
-          <li class="normal" id="section-2.6-2.2">
-            <p id="section-2.6-2.2.1">If the node is a reference proceed as follows:<a href="#section-2.6-2.2.1" class="pilcrow">¶</a></p>
+          <li class="normal" id="section-2.7-3.2">
+            <p id="section-2.7-3.2.1">If the node is a reference proceed as follows:<a href="#section-2.7-3.2.1" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-2.6-2.2.2.1">
-                <p id="section-2.6-2.2.2.1.1">If the node is a leaf node, follow the references until a node
-with a key is reached.<a href="#section-2.6-2.2.2.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="section-2.7-3.2.2.1">
+                <p id="section-2.7-3.2.2.1.1">If the node is a leaf node, follow the references until a node
+with a key is reached.<a href="#section-2.7-3.2.2.1.1" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-2.6-2.2.2.1.2.1">
-                    <p id="section-2.6-2.2.2.1.2.1.1">If the root is reached without finding a key, add the <code>main_key</code> to the
-output set at the index of the leaf node.<a href="#section-2.6-2.2.2.1.2.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="section-2.7-3.2.2.1.2.1">
+                    <p id="section-2.7-3.2.2.1.2.1.1">If the root is reached without finding a key, add the <code>main_key</code> to the
+output set at the index of the leaf node.<a href="#section-2.7-3.2.2.1.2.1.1" class="pilcrow">¶</a></p>
 </li>
-                  <li class="normal" id="section-2.6-2.2.2.1.2.2">
-                    <p id="section-2.6-2.2.2.1.2.2.1">If a parent node with a key is reached, add that key to the output set at
-the index of the leaf node.<a href="#section-2.6-2.2.2.1.2.2.1" class="pilcrow">¶</a></p>
+                  <li class="normal" id="section-2.7-3.2.2.1.2.2">
+                    <p id="section-2.7-3.2.2.1.2.2.1">If a parent node with a key is reached, add that key to the output set at
+the index of the leaf node.<a href="#section-2.7-3.2.2.1.2.2.1" class="pilcrow">¶</a></p>
 </li>
                 </ul>
 </li>
-              <li class="normal" id="section-2.6-2.2.2.2">
-                <p id="section-2.6-2.2.2.2.1">If the node is a parent node execute the algorithm for both children of the
-node.<a href="#section-2.6-2.2.2.2.1" class="pilcrow">¶</a></p>
+              <li class="normal" id="section-2.7-3.2.2.2">
+                <p id="section-2.7-3.2.2.2.1">If the node is a parent node execute the algorithm for both children of the
+node.<a href="#section-2.7-3.2.2.2.1" class="pilcrow">¶</a></p>
 </li>
             </ul>
 </li>
         </ul>
-<p id="section-2.6-3">After executing the algorithm, the output set contains all keys in the key set.<a href="#section-2.6-3" class="pilcrow">¶</a></p>
-<p id="section-2.6-4">A party that is already in possession of the key set and the <code>main_key</code> of a key
-tree can perform any operation on the key tree from just the new direct path and
-copath nodes.<a href="#section-2.6-4" class="pilcrow">¶</a></p>
-<p id="section-2.6-5">TODO: Write up an algorithm to do this.<a href="#section-2.6-5" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
+<div id="key-generation-and-distribution">
+<section id="section-3">
+      <h2 id="name-key-generation-and-distribu">
+<a href="#section-3" class="section-number selfRef">3. </a><a href="#name-key-generation-and-distribu" class="section-name selfRef">Key generation and distribution</a>
+      </h2>
+<p id="section-3-1">All protocol operations take a new <code>main_key</code> as input. That key can be freshly
+sampled and distributed as required by the application. Alternatively a
+previously agreed-upon key can be used. The latter can be facilitated, for
+example, by establishing an MLS group to export the necessary key material. In
+that case, TreeWrap operations can be paired with MLS group management
+operations to coordinate access to new and updated records, as well as restrict
+access to deleted records.<a href="#section-3-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="security-properties">
-<section id="section-2.7">
-        <h3 id="name-security-properties">
-<a href="#section-2.7" class="section-number selfRef">2.7. </a><a href="#name-security-properties" class="section-name selfRef">Security properties</a>
-        </h3>
-<p id="section-2.7-1">TreeWrap provides the following security guarantees, analogous to
-forward-secrecy and post-compromise security:<a href="#section-2.7-1" class="pilcrow">¶</a></p>
+<section id="section-4">
+      <h2 id="name-security-properties">
+<a href="#section-4" class="section-number selfRef">4. </a><a href="#name-security-properties" class="section-name selfRef">Security properties</a>
+      </h2>
+<p id="section-4-1">TreeWrap provides the following security guarantees, analogous to
+forward-secrecy and post-compromise security:<a href="#section-4-1" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-2.7-2.1">
-            <p id="section-2.7-2.1.1">An adversary in possession of the current <code>main_key</code> and key tree, as well as
-any number of past key trees can decrypt the current key set, but will not
-gain access to keys that were updated or removed in the past.<a href="#section-2.7-2.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="section-4-2.1">
+          <p id="section-4-2.1.1">An adversary in possession of the current <code>main_key</code> and public protocol
+state, as well as any number of past key trees can recover the current vector
+of records, but will not gain access to records that were updated or removed
+in the past.<a href="#section-4-2.1.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="section-2.7-2.2">
-            <p id="section-2.7-2.2.1">An adversary in possession of the current <code>main_key</code> and key tree, as well as
-any number of past key trees that observes key tree updates in the future will
-not gain access to newly added keys or new values of updated keys.<a href="#section-2.7-2.2.1" class="pilcrow">¶</a></p>
+        <li class="normal" id="section-4-2.2">
+          <p id="section-4-2.2.1">An adversary in possession in the situation described above that also observes
+-Results of operations in the future will not gain access to newly added or
+changed records.<a href="#section-4-2.2.1" class="pilcrow">¶</a></p>
 </li>
-        </ul>
-</section>
-</div>
+      </ul>
 </section>
 </div>
 <div id="authors-addresses">
