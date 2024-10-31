@@ -56,7 +56,7 @@ well as size of the resulting update to the encrypted records.
 
 # Protocol overview
 
-The protocol state consists of four elements: 
+The protocol state consists of four elements:
 
 - Vector of records: The vector of records to be encrypted
 - AEAD Scheme: The AEAD scheme to encrypt the records and key material
@@ -299,13 +299,13 @@ public protocol state and by parties holding the vector of records.
 ### Updating a vector of records
 
 For remove operations, a party that wants to update the vector of records needs
-only the affected index. 
+only the affected index.
 
 For add and update operations, the party additionally needs the new `main_key`,
 as well as the (new) encrypted record. The party then decrypts the encrypted
 record using the new `main_key`. In case of an update the party replaces the
 record in the affected index with the result. In case of an add, the party uses
-the result to replace the blank with the lowest index or to extend the vector. 
+the result to replace the blank with the lowest index or to extend the vector.
 
 ### Updating a public protocol state
 
